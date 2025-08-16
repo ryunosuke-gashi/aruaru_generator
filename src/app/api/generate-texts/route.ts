@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { supabase } from '@/lib/supabase';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -67,24 +68,36 @@ JSON配列形式で3つのあるあるを返してください。
       );
     }
 
+    // 🆕 Supabaseにデータ保存
+    const { error: logError } = await supabase
+      .from('aruaru_logs')
+      .insert({
+        topic: topic,
+        generated_texts: texts.slice(0, 3)
+      });
+
+    if (logError) {
+      console.error('ログ保存エラー:', logError);
+      // エラーが出てもメイン機能は継続
+    }
+
     return NextResponse.json({ texts: texts.slice(0, 3) });
 
   } catch (error: unknown) {
     console.error('OpenAI API Error:', error);
     
-    if (error instanceof Error && 'code' in error) {
-      const errorWithCode = error as Error & { code?: string };
-      if (error.code === 'insufficient_quota') {
-        return NextResponse.json(
-          { error: 'APIの利用制限に達しました。しばらくしてからお試しください。' }, 
-          { status: 429 }
-      );
+    // エラーハンドリングを修正
+    let errorMessage = '生成に失敗しました。しばらくしてから再試行してください。';
+    let statusCode = 500;
+    
+    if (error instanceof Error && error.message.includes('quota')) {
+      errorMessage = 'APIの利用制限に達しました。しばらくしてからお試しください。';
+      statusCode = 429;
     }
-  }
     
     return NextResponse.json(
-      { error: '生成に失敗しました。しばらくしてから再試行してください。' }, 
-      { status: 500 }
+      { error: errorMessage }, 
+      { status: statusCode }
     );
   }
 }
