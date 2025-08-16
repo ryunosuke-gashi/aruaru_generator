@@ -123,7 +123,6 @@ export default function Home() {
             <div className="space-y-6 md:space-y-8">
               <div className="text-center mb-6 md:mb-10">
                 <h2 className="text-2xl md:text-3xl font-light mb-3 md:mb-4 text-gray-900">想いを込めて</h2>
-                <p className="text-gray-500 text-base md:text-lg px-2">あなたが普段見過ごしているかもしれない日常はなんですか？</p>
               </div>
               
               {/* スマホでは縦並び、タブレット以上で横並び */}
@@ -180,8 +179,7 @@ export default function Home() {
           <div className="space-y-6 md:space-y-8">
             {/* 結果ヘッダー */}
             <div className="text-center">
-              <h3 className="text-2xl md:text-3xl font-light mb-2 md:mb-3 text-gray-900">生成結果</h3>
-              <p className="text-gray-500 text-base md:text-lg">お題：{results[0]?.topic}</p>
+              <h3 className="text-2xl md:text-3xl font-light mb-2 md:mb-3 text-gray-900">お題：{results[0]?.topic}</h3>
             </div>
             
             {/* あるあるカード一覧 */}
