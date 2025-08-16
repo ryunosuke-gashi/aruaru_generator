@@ -69,15 +69,18 @@ JSON配列形式で3つのあるあるを返してください。
 
     return NextResponse.json({ texts: texts.slice(0, 3) });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OpenAI API Error:', error);
     
-    if (error.code === 'insufficient_quota') {
-      return NextResponse.json(
-        { error: 'APIの利用制限に達しました。しばらくしてからお試しください。' }, 
-        { status: 429 }
+    if (error instanceof Error && 'code' in error) {
+      const errorWithCode = error as Error & { code?: string };
+      if (error.code === 'insufficient_quota') {
+        return NextResponse.json(
+          { error: 'APIの利用制限に達しました。しばらくしてからお試しください。' }, 
+          { status: 429 }
       );
     }
+  }
     
     return NextResponse.json(
       { error: '生成に失敗しました。しばらくしてから再試行してください。' }, 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Share2, Shuffle, Zap, ArrowRight, Sparkles } from 'lucide-react';
+import { Share2, Shuffle, Zap, ArrowRight } from 'lucide-react';
 
 // 型定義
 interface AruaruResult {
@@ -65,8 +65,9 @@ export default function Home() {
       
       setResults(newResults);
       
-    } catch (err: any) {
-      setError(err.message || '生成に失敗しました。再試行してください。');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : '生成に失敗しました。再試行してください。';
+      setError(errorMessage);
       console.error('Generation error:', err);
     } finally {
       setLoading(false);
